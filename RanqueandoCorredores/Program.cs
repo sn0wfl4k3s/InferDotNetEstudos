@@ -9,6 +9,11 @@ namespace RanqueandoCorredores
 {
     class Program
     {
+        /*
+         *  Código para classificar a habilidade de corredores de acordo com o histórico de corridas deles 
+         *  usando distribuição Gaussiana através da bibioteca Infer .Net.
+         *  
+         */
         static void Main(string[] args)
         {
             var nomesDosCorredores = new string[] { 
