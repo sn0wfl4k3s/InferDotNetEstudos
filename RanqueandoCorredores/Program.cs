@@ -11,7 +11,7 @@ namespace RanqueandoCorredores
     {
         /*
          *  Código para classificar a habilidade de corredores de acordo com o histórico de corridas deles 
-         *  usando distribuição Gaussiana através da bibioteca Infer.Net.
+         *  usando distribuição Gaussiana através da biblioteca Infer.Net.
          *  
          */
         static void Main(string[] args)
