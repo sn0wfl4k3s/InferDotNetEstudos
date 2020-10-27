@@ -2,6 +2,7 @@
 using Microsoft.ML.Probabilistic.Distributions;
 using Microsoft.ML.Probabilistic.Models;
 using System;
+using System.Linq;
 using Range = Microsoft.ML.Probabilistic.Models.Range;
 
 namespace RankeandoCompetidores
@@ -15,14 +16,13 @@ namespace RankeandoCompetidores
          */
         static void Main(string[] args)
         {
-            var nomesDosEquipes = new string[] { "Angels", "Bruins", "Comets", "Demons", "Eagles", "Flyers" };
+            var nomesDasEquipes = new string[] { "Angels", "Bruins", "Comets", "Demons", "Eagles", "Flyers" };
 
             var IDsDasEquipesVencedoras = new int[] { 0, 2, 1, 0, 1, 3, 0, 2, 4 };
             var IDsDasEquipesPerdedoras = new int[] { 1, 3, 2, 4, 3, 5, 5, 4, 5 };
 
-            var quantidadeDeEquipes = new Range(nomesDosEquipes.Length);
+            var quantidadeDeEquipes = new Range(nomesDasEquipes.Length);
             var quantidadeDePartidas = new Range(IDsDasEquipesVencedoras.Length);
-
 
             var habilidades = Variable.Array<double>(quantidadeDeEquipes);
             habilidades[quantidadeDeEquipes] = Variable.GaussianFromMeanAndVariance(6, 9).ForEach(quantidadeDeEquipes);
@@ -41,20 +41,22 @@ namespace RankeandoCompetidores
                 Variable.ConstrainTrue(performanceDoVencedor > performanceDoPerdedor);
             }
 
-            var mecanismoDeInferência = new InferenceEngine
+            var mecanismoDeInferencia = new InferenceEngine
             {
                 Algorithm = new ExpectationPropagation(),
                 NumberOfIterations = 50,
                 ShowProgress = false,
             };
 
-            var habilidadesInferidas = mecanismoDeInferência.Infer<Gaussian[]>(habilidades);
+            var habilidadesInferidas = mecanismoDeInferencia.Infer<Gaussian[]>(habilidades);
 
-            for (int i = 0; i < nomesDosEquipes.Length; ++i)
+            var equipes = habilidadesInferidas
+                .Select((h, i) => new { Nome = nomesDasEquipes[i], Habilidade = h.GetMean() })
+                .OrderByDescending(e => e.Habilidade);
+
+            foreach (var equipe in equipes)
             {
-                var habilidade = habilidadesInferidas[i].GetMean();
-
-                Console.WriteLine($"{nomesDosEquipes[i]}: {habilidade:F2}");
+                Console.WriteLine($"{equipe.Nome}: {equipe.Habilidade:F2}");
             }
         }
     }
